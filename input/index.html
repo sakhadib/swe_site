@@ -21,7 +21,65 @@
     <script defer src="script.js"></script>
 </head>
 <body>
+    <div class="main-input mt-5 mb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center">Input New File</h1>
+                    <form action="#" method="post">
+                        <div class="row mt-5">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <label for="floatingInput">Course Code</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <label for="floatingInput">Course Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <label for="floatingInput">File Title</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <label for="floatingInput">File URL ( drive link recommended )</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <label for="floatingInput">Input By</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <label for="floatingInput">Date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <label for="floatingInput">Batch</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-4" style="width: 100%;">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
 
+    
 
     <!-- Main Section -->
     <section class="main-table" id = "standing">
@@ -35,6 +93,7 @@
                                 <th>Date</th>
                                 <th>File Title</th>
                                 <th>Course</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
