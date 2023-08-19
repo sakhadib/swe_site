@@ -1,3 +1,30 @@
+<?php
+    require_once "../connection.php";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $uname = $_POST['username'];
+        $pass = $_POST['password'];
+
+        $sql = "SELECT name, batch, password FROM `shuser` WHERE `username` = '$uname'";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            if (password_verify($pass, $row['password'])) {
+                session_start();
+                $_SESSION['username'] = $uname;
+                $_SESSION['name'] = $row['name'];
+                $_SESSION['batch'] = $row['batch'];
+                header("Location: ../input/");
+            } else {
+                echo "Wrong password";
+            }
+        } else {
+            echo "No user found";
+        }
+    }
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,11 +51,11 @@
                     <h1 class="text-center">login</h1>
                     <form action="../login/" method="post">
                         <div class="form-floating mb-3 mt-4">
-                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
+                            <input type="text" class="form-control" id="floatingInput" name = "username" placeholder="name@example.com">
                             <label for="floatingInput">username</label>
                         </div>
                         <div class="form-floating">
-                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                            <input type="password" class="form-control" id="floatingPassword" name = "password" placeholder="Password">
                             <label for="floatingPassword">Password</label>
                         </div>
                         <button type="submit" class="btn btn-danger mt-4" style="width: 100%;">login</button>

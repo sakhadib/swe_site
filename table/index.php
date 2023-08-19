@@ -1,3 +1,47 @@
+<?php
+    // Database Connection
+    require_once "../connection.php";
+    
+    if(!isset($_GET['b'])){
+        header("Location: ../library/");
+    }
+
+    // get method b = ?
+    $batch = $_GET['b'];
+
+    
+
+    //Query
+    $query = "SELECT id, date, title, url, CourseCode FROM `file` WHERE `batch` = '$batch' ORDER BY `date` DESC";
+    $result = $conn->query($query);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
+    // Generate the HTML table rows dynamically
+    $rows = '';
+    $ct = 1;
+    while ($row = $result->fetch_assoc()) {
+        $title = '<a href="../file/?id='.$row['id'].'">' . $row['title'] . '</a>';
+        if($row['date'] == "0000-00-00") $row['date'] = "2023-08-09";
+        $rows .= "<tr>
+            <td>{$ct}</td>
+            <td>{$row['date']}</td>
+            <td>{$title}</td>
+            <td>{$row['CourseCode']}</td>
+        </tr>";
+        $ct++;
+    }
+    //closing the connection
+    $conn->close()
+
+?>
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,10 +65,10 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-
+    <?php include_once "../header.php"; ?>
 
     <!-- Main Section -->
-    <section class="main-table" id = "standing">
+    <section class="main-table mt-5" id = "standing" style = "min-height: 75vh;">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -32,16 +76,16 @@
                         <thead>
                             <tr>
                                 <th>sl</th>
-                                <th>Date</th>
-                                <th>File Title</th>
-                                <th>Course</th>
+                                <th>date</th>
+                                <th>title</th>
+                                <th>course</th>
                             </tr>
                         </thead>
                         <tbody>
-                    <!-- Automatic Code injected by PHP -->
-                        
-                    </tbody>
-                </table>
+                        <!-- Automatic Code injected by PHP -->
+                        <?php echo $rows; ?>
+                        </tbody>
+                    </table>
                             
                             
                 </div>

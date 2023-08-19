@@ -1,3 +1,68 @@
+<?php
+// Check if the form has been submitted
+    $error = "no error";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once "../connection.php";
+        // Retrieve form data using $_POST
+        $name = $_POST['name'];
+        $uname = $_POST['username'];
+        $batch = $_POST['batch']; 
+        $email = $_POST['email'];
+        $pass = $_POST['pass'];
+        $confirmPassword = $_POST['repass'];
+
+        $ucheck = "SELECT name FROM `shuser` WHERE `username` = '$uname'";
+        $result = $conn->query($ucheck);
+        if ($result->num_rows > 0) {
+            $error = "Username already exists";
+        }
+        else{
+            if ($pass != $confirmPassword) {
+                $error = "Passwords do not match";
+            } 
+            else {
+                // Prepare an insert statement
+                $sql = "INSERT INTO `shuser` (`name`, `username`, `batch`, `email`, `password`) VALUES (?, ?, ?, ?, ?)";
+    
+                if ($stmt = $conn->prepare($sql)) {
+                    // Bind variables to the prepared statement as parameters
+                    $stmt->bind_param("sssss", $param_name, $param_username, $param_batch, $param_email, $param_password);
+    
+                    // Set parameters
+                    $param_name = $name;
+                    $param_username = $uname;
+                    $param_batch = $batch;
+                    $param_email = $email;
+                    $param_password = password_hash($pass, PASSWORD_DEFAULT); // Creates a password hash
+                    
+    
+                    // Attempt to execute the prepared statement
+                    if ($stmt->execute()) {
+                        // Redirect to login page
+                        $error = "Account created successfully <a href='../login/'>Login</a>";
+                    } else {
+                        $error = "Something went wrong. Please try again later.";
+                    }
+                }
+    
+                // Close statement
+                $stmt->close();
+            }
+        }
+        
+        
+    }
+
+    $currentYear = date('Y'); // Get current year
+    $lastTwoDigits = substr($currentYear, -2); // Extract last two digits
+    $options = "";
+    for($i = $lastTwoDigits-4; $i <= $lastTwoDigits; $i++){
+        $options .= '<option value="'.$i.'">Batch '.$i.'</option>';
+    }
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,6 +87,13 @@
             <div class="row">
                 <div class="col-10 col-lg-4 offset-lg-4 offset-1">
                     <h1 class="text-center">sign up</h1>
+                    
+                        <?php 
+                            if($error != "no error")
+                            {
+                                echo '<div class="alert alert-info mt-3 mb-3" role="alert">'.$error.'</div>';
+                            }
+                        ?>
                     <form action="../signup/" method="post">
                         <div class="form-floating mt-4">
                             <input type="text" class="form-control" id="floatingInput" name="name" placeholder="name@example.com" required>
@@ -31,9 +103,9 @@
                             <input type="text" class="form-control" id="floatingInput" name="username" placeholder="name@example.com" required>
                             <label for="floatingInput">username</label>
                         </div>
-                        <select class="form-select mt-4" aria-label="Default select example" required>
+                        <select class="form-select mt-4" aria-label="Default select example" name="batch" required>
                             <option selected disabled>Batch</option>
-                            <!-- ? <?php echo $options; ?> -->
+                            <?php echo $options; ?>
                         </select>
                         <div class="form-floating mt-4">
                             <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" required>

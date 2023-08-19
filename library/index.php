@@ -1,3 +1,40 @@
+<?php
+    // Database Connection
+    require_once "../connection.php";
+
+    //Query
+    $query = "SELECT id, date, title, url, CourseCode, batch FROM `file` ORDER BY `date` DESC";
+    $result = $conn->query($query);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
+    // Generate the HTML table rows dynamically
+    $rows = '';
+    $ct = 1;
+    while ($row = $result->fetch_assoc()) {
+        $title = '<a href="../file/?id='.$row['id'].'">' . $row['title'] . '</a>';
+        if($row['date'] == "0000-00-00") $row['date'] = "7 July 2023";
+        $rows .= "<tr>
+            <td class='text-center'>{$ct}</td>
+            <td class='text-center'>{$row['date']}</td>
+            <td>{$title}</td>
+            <td class='text-center'>{$row['CourseCode']}</td>
+            <td class='text-center'>{$row['batch']}</td>
+        </tr>";
+        $ct++;
+    }
+
+    //closing the connection
+    $conn->close()
+
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +58,7 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-
+    <?php include "../header.php"; ?>
 
     <!-- Main Section -->
     <section class="main-table" id = "standing">
@@ -31,14 +68,16 @@
                     <table id="stable" class="table table-striped" style="width:100%">
                         <thead>
                             <tr>
+                                <th>Sl</th>
                                 <th>Date</th>
                                 <th>File Title</th>
                                 <th>Course</th>
+                                <th>Batch</th>
                             </tr>
                         </thead>
                         <tbody>
                     <!-- Automatic Code injected by PHP -->
-                        
+                        <?php echo $rows; ?>
                     </tbody>
                 </table>
                             
