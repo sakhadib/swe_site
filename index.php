@@ -1,3 +1,28 @@
+<?php
+    // Include the database connection file
+    require_once('connection.php');
+    $element = '';
+    $sql = "SELECT DISTINCT batch FROM `shuser` ORDER BY `batch` ASC";
+    $result = $conn->query($sql);
+    while ($row = $result->fetch_assoc()) {
+        $batch = $row['batch'];
+        $element .= '<div class="col-lg-6 col-10 offset-lg-0 offset-1 mt-3">
+                        <div class="sh-batch mt-2">
+                            <p>SWE '. $batch .'</p>
+                            <a href="table/?b='.$batch.'" class="mt-3">Go to files</a>
+                        </div>
+                    </div>';
+    }
+
+    //closing the connection
+    $conn->close()
+
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,13 +54,33 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">All file Library</a>
+                    <a class="nav-link" href="library/">All file Library</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="about/">About</a>
                 </li>
                 </ul>
-                
+                <ul class="navbar-nav me-0 mb-2 mb-lg-0">
+                    <?php
+                        session_start();
+                        if(isset($_SESSION['name'])){
+                            echo '<li class="nav-item">
+                                <a class="nav-link" href="input/">input</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="logout/">logout</a>
+                            </li>';
+                        }
+                        else{
+                            echo '<li class="nav-item">
+                                <a class="nav-link" href="signup/">Signup</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="login/">Login</a>
+                            </li>';
+                        }
+                    ?>
+                </ul>
             </div>
         </div>
     </nav>
@@ -58,7 +103,8 @@
     <!-- Main Section -->
     <div class="container mt-3 sh-main">
         <div class="row">
-            <div class="col-lg-6 col-10 offset-lg-0 offset-1 mt-3">
+            <?php echo $element; ?>
+            <!-- <div class="col-lg-6 col-10 offset-lg-0 offset-1 mt-3">
                 <div class="sh-batch mt-2">
                     <p>SWE 21</p>
                     <a href="table/?b=21" class="mt-3">Go to files</a>
@@ -67,9 +113,9 @@
             <div class="col-lg-6 col-10 offset-lg-0 offset-1 mt-3">
                 <div class="sh-batch mt-2">
                     <p>SWE 22</p>
-                    <a href="#" class="mt-3">Go to files</a>
+                    <a href="table/?b=22" class="mt-3">Go to files</a>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 

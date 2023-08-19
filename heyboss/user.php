@@ -1,18 +1,16 @@
 <?php
-    // Database Connection
-    require_once "../connection.php";
-    
-    if(!isset($_GET['b'])){
-        header("Location: ../library/");
+    session_start();
+    if(!isset($_SESSION['username']) || !$_SESSION['username'] == "sakhadib")
+    {
+        header("Location: ../login/");
     }
+?>
 
-    // get method b = ?
-    $batch = $_GET['b'];
-
-    
+<?php
+    require_once "../connection.php";
 
     //Query
-    $query = "SELECT id, date, title, url, CourseCode FROM `file` WHERE `batch` = '$batch' ORDER BY `date` DESC";
+    $query = "SELECT id, username, email, name, batch FROM shuser";
     $result = $conn->query($query);
 
     if (!$result) {
@@ -22,13 +20,16 @@
     $rows = '';
     $ct = 1;
     while ($row = $result->fetch_assoc()) {
-        $title = '<a href="../file/?id='.$row['id'].'">' . $row['title'] . '</a>';
-        if($row['date'] == "0000-00-00") $row['date'] = "2023-08-09";
+        
+        $dlt = '<a href="../heyboss/userdlt.php?id='.$row['id'].'" class="link-danger"><i class="uil uil-trash-alt"></i> Delete</a>';
         $rows .= "<tr>
             <td>{$ct}</td>
-            <td>{$row['date']}</td>
-            <td>{$title}</td>
-            <td>{$row['CourseCode']}</td>
+            <td>{$row['id']}</td>
+            <td>{$row['name']}</td>
+            <td>{$row['username']}</td>
+            <td>{$row['email']}</td>
+            <td>{$row['batch']}</td>
+            <td class='text-center'>{$dlt}</td>
         </tr>";
         $ct++;
     }
@@ -36,10 +37,6 @@
     $conn->close()
 
 ?>
-
-
-
-
 
 
 <!DOCTYPE html>
@@ -65,17 +62,14 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-    <?php
-        session_start();
-        if(isset($_SESSION['name'])){
-            include "../logheader.php";
-        } else {
-            include "../header.php";
-        }
-    ?>
+    <!-- Navbar -->
+    <?php include '../logheader.php'; ?>
+    
+
+    
 
     <!-- Main Section -->
-    <section class="main-table mt-5" id = "standing" style = "min-height: 75vh;">
+    <section class="main-table mt-5" id = "standing">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -83,16 +77,19 @@
                         <thead>
                             <tr>
                                 <th>sl</th>
-                                <th>date</th>
-                                <th>title</th>
-                                <th>course</th>
+                                <th>id</th>
+                                <th>Name</th>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Batch</th>
+                                <th class='text-center'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <!-- Automatic Code injected by PHP -->
+                    <!-- Automatic Code injected by PHP -->
                         <?php echo $rows; ?>
-                        </tbody>
-                    </table>
+                    </tbody>
+                </table>
                             
                             
                 </div>

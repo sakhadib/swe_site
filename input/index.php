@@ -1,3 +1,68 @@
+<?php
+    session_start();
+    if(!isset($_SESSION['username']))
+    {
+        header("Location: ../login/");
+    }
+    require_once "../connection.php";
+    $uname = $_SESSION['username'];
+    $batch = $_SESSION['batch'];
+    $name = $_SESSION['name'];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $CourseCode = $_POST['course_code'];
+        $courseName = $_POST['course_name'];
+        $title = $_POST['title'];
+        $url = $_POST['url'];
+        $user = $name;
+        $date = date("Y-m-d");
+    
+        // Assuming you have a database connection established
+        $stmt = $conn->prepare("INSERT INTO file (CourseCode, courseName, title, url, user, date, batch) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        
+        // Bind parameters
+        $stmt->bind_param("sssssss", $CourseCode, $courseName, $title, $url, $user, $date, $batch);
+        
+        // Execute the statement
+        $stmt->execute();
+        
+        // Close statement
+        $stmt->close();
+    }
+?>
+
+<?php
+    require_once "../connection.php";
+
+    //Query
+    $query = "SELECT id, date, title, url, CourseCode FROM `file` WHERE `batch` = '$batch' AND `user` = '$name' ORDER BY `date` DESC";
+    $result = $conn->query($query);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
+    // Generate the HTML table rows dynamically
+    $rows = '';
+    $ct = 1;
+    while ($row = $result->fetch_assoc()) {
+        $title = '<a href="../file/?id='.$row['id'].'">' . $row['title'] . '</a>';
+        $dlt = '<a href="../input/dlt.php?id='.$row['id'].'" class="link-danger"><i class="uil uil-trash-alt"></i> Delete</a>';
+        if($row['date'] == "0000-00-00") $row['date'] = "2023-08-09";
+        $rows .= "<tr>
+            <td>{$ct}</td>
+            <td>{$row['date']}</td>
+            <td>{$title}</td>
+            <td>{$row['CourseCode']}</td>
+            <td class='text-center'>{$dlt}</td>
+        </tr>";
+        $ct++;
+    }
+    //closing the connection
+    $conn->close()
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +86,8 @@
     <script defer src="script.js"></script>
 </head>
 <body>
+    <!-- Navbar -->
+    <?php include '../logheader.php'; ?>
     <div class="main-input mt-5 mb-5">
         <div class="container">
             <div class="row">
@@ -30,43 +97,43 @@
                         <div class="row mt-5">
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <input type="text" class="form-control" name = "course_code" id="floatingInput" placeholder="SWE 4101" required>
                                     <label for="floatingInput">Course Code</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <input type="text" class="form-control" name = "course_name" id="floatingInput" placeholder="SWE 4101" required>
                                     <label for="floatingInput">Course Name</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <input type="text" class="form-control" name = "title" id="floatingInput" placeholder="SWE 4101" required>
                                     <label for="floatingInput">File Title</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" required>
+                                    <input type="text" class="form-control" name = "url" id="floatingInput" placeholder="SWE 4101" required>
                                     <label for="floatingInput">File URL ( drive link recommended )</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="<?php echo $name ?>" required readonly>
                                     <label for="floatingInput">Input By</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="<?php echo date("Y-m-d") ?>" required readonly>
                                     <label for="floatingInput">Date</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="" required readonly>
+                                    <input type="text" class="form-control" id="floatingInput" placeholder="SWE 4101" value="<?php echo $batch ?>" required readonly>
                                     <label for="floatingInput">Batch</label>
                                 </div>
                             </div>
@@ -93,12 +160,12 @@
                                 <th>Date</th>
                                 <th>File Title</th>
                                 <th>Course</th>
-                                <th>Action</th>
+                                <th class='text-center'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                     <!-- Automatic Code injected by PHP -->
-                        
+                        <?php echo $rows; ?>
                     </tbody>
                 </table>
                             

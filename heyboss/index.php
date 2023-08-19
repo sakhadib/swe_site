@@ -1,3 +1,44 @@
+<?php
+    session_start();
+    if(!isset($_SESSION['username']) || !$_SESSION['username'] == "sakhadib")
+    {
+        header("Location: ../login/");
+    }
+?>
+
+<?php
+    require_once "../connection.php";
+
+    //Query
+    $query = "SELECT id, date, title, url, CourseCode, batch FROM `file` ORDER BY `date` DESC";
+    $result = $conn->query($query);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
+    // Generate the HTML table rows dynamically
+    $rows = '';
+    $ct = 1;
+    while ($row = $result->fetch_assoc()) {
+        $title = '<a href="../file/?id='.$row['id'].'">' . $row['title'] . '</a>';
+        $dlt = '<a href="../heyboss/dlt.php?id='.$row['id'].'" class="link-danger"><i class="uil uil-trash-alt"></i> Delete</a>';
+        if($row['date'] == "0000-00-00") $row['date'] = "2023-08-09";
+        $rows .= "<tr>
+            <td>{$ct}</td>
+            <td>{$row['date']}</td>
+            <td>{$title}</td>
+            <td>{$row['batch']}</td>
+            <td>{$row['CourseCode']}</td>
+            <td class='text-center'>{$dlt}</td>
+        </tr>";
+        $ct++;
+    }
+    //closing the connection
+    $conn->close()
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,10 +62,14 @@
     <script defer src="script.js"></script>
 </head>
 <body>
+    <!-- Navbar -->
+    <?php include '../logheader.php'; ?>
+    
 
+    
 
     <!-- Main Section -->
-    <section class="main-table" id = "standing">
+    <section class="main-table mt-5" id = "standing">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -33,15 +78,15 @@
                             <tr>
                                 <th>sl</th>
                                 <th>Date</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>email</th>
-                                <th>Action</th>
+                                <th>File Title</th>
+                                <th>Batch</th>
+                                <th>Course</th>
+                                <th class='text-center'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                     <!-- Automatic Code injected by PHP -->
-                        
+                        <?php echo $rows; ?>
                     </tbody>
                 </table>
                             

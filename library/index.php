@@ -58,7 +58,14 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-    <?php include "../header.php"; ?>
+    <?php
+        session_start();
+        if(isset($_SESSION['name'])){
+            include "../logheader.php";
+        } else {
+            include "../header.php";
+        }
+    ?>
 
     <!-- Main Section -->
     <section class="main-table" id = "standing">
